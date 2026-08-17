@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/dashboard}" class="active">Dashboard</a>
+            <a th:href="@{/chat}">Chats</a>
+            <a th:href="@{/contacts}">Contacts</a>
+            <a th:href="@{/notifications}">
+                Notifications
+                <span th:if="${unreadNotifications > 0}" class="badge" th:text="${unreadNotifications}"></span>
+            </a>
+            <a th:href="@{/profile}">Profile</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <span class="sidebar-title">Menu</span>
+            <a th:href="@{/dashboard}" class="active"><span class="icon">🏠</span> Dashboard</a>
+            <a th:href="@{/chat}"><span class="icon">💬</span> Chats</a>
+            <a th:href="@{/contacts}"><span class="icon">👥</span> Contacts</a>
+            <a th:href="@{/notifications}">
+                <span class="icon">🔔</span> Notifications
+                <span th:if="${unreadNotifications > 0}" class="badge" th:text="${unreadNotifications}"></span>
+            </a>
+            <a th:href="@{/bluetooth}"><span class="icon">📡</span> Bluetooth</a>
+            <span class="sidebar-title">Account</span>
+            <a th:href="@{/profile}"><span class="icon">👤</span> Profile</a>
+            <a th:href="@{/logout}"><span class="icon">🚪</span> Logout</a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <div>
+                    <h1>Welcome back, <span th:text="${user.fullName}">User</span> 👋</h1>
+                    <p>Here's what's happening with your account.</p>
+                </div>
+                <a class="btn primary" th:href="@{/chat/new}">+ New Chat</a>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">💬</div>
+                    <div class="stat-label">Active Chats</div>
+                    <div class="stat-value" th:text="${#lists.size(recentChats)}">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔔</div>
+                    <div class="stat-label">Unread Notifications</div>
+                    <div class="stat-value" th:text="${unreadNotifications}">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🟢</div>
+                    <div class="stat-label">Status</div>
+                    <div class="stat-value" style="font-size:1.1rem;color:var(--success);">Online</div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-4">
+                <h2 style="font-size:1.1rem;font-weight:700;">Recent Chats</h2>
+                <a th:href="@{/chat}" class="btn secondary sm">View All</a>
+            </div>
+
+            <ul class="chat-list" th:if="${not #lists.isEmpty(recentChats)}">
+                <li th:each="chat : ${recentChats}">
+                    <a class="chat-item" th:href="@{/chat/{id}(id=${chat.id})}">
+                        <div class="avatar" th:text="${#strings.substring(chat.otherUser.fullName, 0, 1)}">U</div>
+                        <div class="chat-meta">
+                            <div class="chat-name" th:text="${chat.otherUser.fullName}">Name</div>
+                            <div class="chat-preview" th:text="${chat.lastMessage} ?: 'No messages yet'"></div>
+                        </div>
+                        <div>
+                            <span th:if="${chat.unreadCount > 0}" class="badge" th:text="${chat.unreadCount}"></span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="empty-state" th:if="${#lists.isEmpty(recentChats)}">
+                <div class="icon">💬</div>
+                <h3>No chats yet</h3>
+                <p>Add a contact to start your first conversation.</p>
+                <a class="btn primary mt-4" th:href="@{/contacts}">Add Contact</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

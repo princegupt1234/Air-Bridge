@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Profile – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <main class="auth-container">
+        <form class="auth-form" th:action="@{/profile/edit}" method="post">
+            <h2>Complete Your Profile</h2>
+            <p class="muted">You can skip this and do it later from your profile page.</p>
+            <label>Phone Number</label>
+            <input type="text" name="phoneNumber" placeholder="Optional">
+            <label>About</label>
+            <textarea name="about" rows="3" placeholder="Tell something about yourself"></textarea>
+            <input type="hidden" name="fullName" th:value="${user != null ? user.fullName : ''}">
+            <button type="submit">Save & Continue</button>
+            <p><a th:href="@{/dashboard}">Skip for now</a></p>
+        </form>
+    </main>
+</body>
+</html>

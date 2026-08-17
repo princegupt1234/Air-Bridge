@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/dashboard}">Dashboard</a>
+            <a th:href="@{/profile}" class="active">Profile</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <span class="sidebar-title">Menu</span>
+            <a th:href="@{/dashboard}"><span class="icon">🏠</span> Dashboard</a>
+            <a th:href="@{/chat}"><span class="icon">💬</span> Chats</a>
+            <a th:href="@{/contacts}"><span class="icon">👥</span> Contacts</a>
+            <a th:href="@{/notifications}"><span class="icon">🔔</span> Notifications</a>
+            <span class="sidebar-title">Account</span>
+            <a th:href="@{/profile}" class="active"><span class="icon">👤</span> Profile</a>
+            <a th:href="@{/logout}"><span class="icon">🚪</span> Logout</a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <h1>My Profile</h1>
+                <a class="btn primary" th:href="@{/profile/edit}">✏ Edit Profile</a>
+            </div>
+
+            <div class="profile-hero">
+                <div class="avatar xl" th:text="${#strings.substring(user.fullName, 0, 1)}">U</div>
+                <div>
+                    <h2 th:text="${user.fullName}">Full Name</h2>
+                    <p class="email" th:text="${user.email}">email@example.com</p>
+                    <div class="actions">
+                        <span style="display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--success);">
+                            🟢 Online
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-detail-card">
+                <h3>Account Details</h3>
+                <div class="detail-row">
+                    <span class="label">Full Name</span>
+                    <span th:text="${user.fullName}">—</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Email</span>
+                    <span th:text="${user.email}">—</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Phone</span>
+                    <span th:text="${user.phoneNumber} ?: '—'">—</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">About</span>
+                    <span th:text="${user.about} ?: '—'">—</span>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

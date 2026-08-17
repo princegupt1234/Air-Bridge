@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/dashboard}">Dashboard</a>
+            <a th:href="@{/chat}">Chats</a>
+            <a th:href="@{/contacts}" class="active">Contacts</a>
+            <a th:href="@{/profile}">Profile</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <span class="sidebar-title">Menu</span>
+            <a th:href="@{/dashboard}"><span class="icon">🏠</span> Dashboard</a>
+            <a th:href="@{/chat}"><span class="icon">💬</span> Chats</a>
+            <a th:href="@{/contacts}" class="active"><span class="icon">👥</span> Contacts</a>
+            <a th:href="@{/notifications}"><span class="icon">🔔</span> Notifications</a>
+            <span class="sidebar-title">Account</span>
+            <a th:href="@{/profile}"><span class="icon">👤</span> Profile</a>
+            <a th:href="@{/logout}"><span class="icon">🚪</span> Logout</a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <div>
+                    <h1>Contacts</h1>
+                    <p>Manage your connections</p>
+                </div>
+                <a class="btn primary" th:href="@{/contacts/add}">+ Add Contact</a>
+            </div>
+
+            <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+
+            <div class="contact-list" th:if="${not #lists.isEmpty(contacts)}">
+                <div class="contact-card" th:each="contact : ${contacts}">
+                    <div class="avatar" th:text="${#strings.substring(contact.fullName, 0, 1)}">U</div>
+                    <div class="contact-info">
+                        <div class="contact-name" th:text="${contact.fullName}">Name</div>
+                        <div class="contact-email" th:text="${contact.email}">email</div>
+                    </div>
+                    <div class="contact-actions">
+                        <form th:action="@{/chat/start}" method="post">
+                            <input type="hidden" name="userId" th:value="${contact.id}">
+                            <button type="submit" class="btn primary sm">💬 Chat</button>
+                        </form>
+                        <form th:action="@{/contacts/block/{id}(id=${contact.id})}" method="post">
+                            <button type="submit" class="btn secondary sm">Block</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" th:if="${#lists.isEmpty(contacts)}">
+                <div class="icon">👥</div>
+                <h3>No contacts yet</h3>
+                <p>Add someone by their email to start chatting.</p>
+                <a class="btn primary mt-4" th:href="@{/contacts/add}">Add Contact</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

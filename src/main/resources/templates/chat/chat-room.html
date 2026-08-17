@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body style="overflow:hidden;">
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/chat}">← Back</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="chat-shell">
+        <div class="chat-topbar">
+            <div class="avatar-wrap">
+                <div class="avatar" th:text="${#strings.substring(otherUser.fullName, 0, 1)}">U</div>
+            </div>
+            <div class="chat-info">
+                <h3 th:text="${otherUser.fullName}">Contact Name</h3>
+                <p th:text="${otherUser.online} ? 'Online' : 'Offline'"
+                   th:style="${otherUser.online} ? 'color:var(--success)' : ''">Offline</p>
+            </div>
+        </div>
+
+        <div class="messages-area" id="messagesArea">
+            <div th:if="${#lists.isEmpty(messages)}" class="empty-state" style="margin:auto;">
+                <div class="icon">👋</div>
+                <h3>Say hello!</h3>
+                <p>This is the beginning of your conversation.</p>
+            </div>
+
+            <div th:each="msg : ${messages}"
+                 th:classappend="${msg.senderId == currentUserId} ? 'outgoing' : 'incoming'"
+                 class="message-bubble">
+                <div class="bubble-body" th:text="${msg.content}">Message</div>
+                <div class="bubble-meta" th:text="${#temporals.format(msg.sentAt, 'HH:mm')}"></div>
+            </div>
+        </div>
+
+        <form class="message-input-bar" th:action="@{/chat/{id}/send(id=${chatId})}" method="post">
+            <input type="text" name="content" placeholder="Type a message…" required autofocus autocomplete="off">
+            <button type="submit">Send ➤</button>
+        </form>
+    </div>
+
+    <script>
+        const area = document.getElementById('messagesArea');
+        if (area) area.scrollTop = area.scrollHeight;
+    </script>
+</body>
+</html>

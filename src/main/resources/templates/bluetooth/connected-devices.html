@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluetooth – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/dashboard}">Dashboard</a>
+            <a th:href="@{/bluetooth}" class="active">Bluetooth</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <span class="sidebar-title">Bluetooth</span>
+            <a th:href="@{/bluetooth}" class="active"><span class="icon">📡</span> Devices</a>
+            <a th:href="@{/bluetooth/scan}"><span class="icon">🔍</span> Scan</a>
+            <span class="sidebar-title">Menu</span>
+            <a th:href="@{/dashboard}"><span class="icon">🏠</span> Dashboard</a>
+            <a th:href="@{/chat}"><span class="icon">💬</span> Chats</a>
+            <a th:href="@{/logout}"><span class="icon">🚪</span> Logout</a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <div>
+                    <h1>Bluetooth</h1>
+                    <p th:text="${available} ? 'Adapter ready' : 'Adapter not found'" 
+                       th:style="${available} ? 'color:var(--success)' : 'color:var(--danger)'"></p>
+                </div>
+                <a class="btn primary" th:href="@{/bluetooth/scan}">🔍 Scan Devices</a>
+            </div>
+
+            <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+
+            <div th:if="${!available}" class="alert error">
+                ⚠ Bluetooth adapter not detected. Enable Bluetooth in your OS settings.
+            </div>
+
+            <!-- Server Controls -->
+            <div class="card" style="margin-bottom:24px;" th:if="${available}">
+                <h3 style="font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:16px;">
+                    RFCOMM Server
+                </h3>
+                <p style="font-size:.875rem;color:var(--muted);margin-bottom:16px;">
+                    Start the server so other Air-Bridge devices can connect to you over Bluetooth.
+                </p>
+                <div style="display:flex;gap:10px;">
+                    <form th:action="@{/bluetooth/server/start}" method="post">
+                        <button type="submit" class="btn success">▶ Start Server</button>
+                    </form>
+                    <form th:action="@{/bluetooth/server/stop}" method="post">
+                        <button type="submit" class="btn secondary">⏹ Stop Server</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Connected Devices -->
+            <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:16px;">
+                Connected Devices
+                <span class="badge" th:text="${#lists.size(connectedDevices)}">0</span>
+            </h2>
+
+            <div class="contact-list" th:if="${not #lists.isEmpty(connectedDevices)}" style="margin-bottom:28px;">
+                <div class="contact-card" th:each="device : ${connectedDevices}">
+                    <div class="avatar-wrap">
+                        <div class="avatar">📱</div>
+                        <div class="online-dot"></div>
+                    </div>
+                    <div class="contact-info">
+                        <div class="contact-name" th:text="${device.deviceName}">Device</div>
+                        <div class="contact-email" th:text="${device.macAddress}">MAC</div>
+                    </div>
+                    <div class="contact-actions">
+                        <a class="btn primary sm" th:href="@{/bluetooth/chat/{mac}(mac=${device.macAddress})}">💬 Chat</a>
+                        <form th:action="@{/bluetooth/disconnect}" method="post">
+                            <input type="hidden" name="macAddress" th:value="${device.macAddress}">
+                            <button type="submit" class="btn danger sm">Disconnect</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" th:if="${#lists.isEmpty(connectedDevices)}" style="margin-bottom:28px;">
+                <div class="icon">📡</div>
+                <h3>No active connections</h3>
+                <p>Scan for devices or start the server to accept incoming connections.</p>
+            </div>
+
+            <!-- Known Devices -->
+            <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:16px;">Known Devices</h2>
+
+            <div class="contact-list" th:if="${not #lists.isEmpty(knownDevices)}">
+                <div class="contact-card" th:each="device : ${knownDevices}">
+                    <div class="avatar">💻</div>
+                    <div class="contact-info">
+                        <div class="contact-name" th:text="${device.deviceName}">Device</div>
+                        <div class="contact-email" th:text="${device.macAddress}">MAC</div>
+                    </div>
+                    <div class="contact-actions">
+                        <form th:if="${!device.connected}" th:action="@{/bluetooth/connect}" method="post">
+                            <input type="hidden" name="macAddress" th:value="${device.macAddress}">
+                            <button type="submit" class="btn primary sm">Connect</button>
+                        </form>
+                        <span th:if="${device.connected}" style="color:var(--success);font-size:.8rem;font-weight:600;">● Connected</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" th:if="${#lists.isEmpty(knownDevices)}">
+                <div class="icon">💻</div>
+                <h3>No known devices</h3>
+                <p>Run a scan to discover nearby Bluetooth devices.</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

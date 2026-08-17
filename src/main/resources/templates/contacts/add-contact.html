@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Contact – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/contacts}">← Contacts</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="auth-bg">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="brand">Add Contact</div>
+                <p>Find someone by their email address</p>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+
+            <form th:action="@{/contacts/add}" method="post">
+                <div class="form-group">
+                    <label>Email address</label>
+                    <input type="email" name="email" placeholder="contact@example.com" required autofocus>
+                </div>
+                <button type="submit">Add Contact</button>
+            </form>
+
+            <div class="auth-footer">
+                <a th:href="@{/contacts}">← Back to Contacts</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

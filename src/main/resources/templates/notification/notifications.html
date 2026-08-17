@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/dashboard}">Dashboard</a>
+            <a th:href="@{/notifications}" class="active">Notifications</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <span class="sidebar-title">Menu</span>
+            <a th:href="@{/dashboard}"><span class="icon">🏠</span> Dashboard</a>
+            <a th:href="@{/chat}"><span class="icon">💬</span> Chats</a>
+            <a th:href="@{/contacts}"><span class="icon">👥</span> Contacts</a>
+            <a th:href="@{/notifications}" class="active"><span class="icon">🔔</span> Notifications</a>
+            <span class="sidebar-title">Account</span>
+            <a th:href="@{/profile}"><span class="icon">👤</span> Profile</a>
+            <a th:href="@{/logout}"><span class="icon">🚪</span> Logout</a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <div>
+                    <h1>Notifications</h1>
+                    <p>Your recent activity</p>
+                </div>
+            </div>
+
+            <div class="notif-list" th:if="${not #lists.isEmpty(notifications)}">
+                <div class="notif-item" th:each="n : ${notifications}">
+                    <div class="notif-icon">🔔</div>
+                    <div class="notif-body">
+                        <div class="notif-title" th:text="${n.title}">Title</div>
+                        <div class="notif-text" th:text="${n.body}">Body</div>
+                    </div>
+                    <div class="notif-time" th:text="${#temporals.format(n.createdAt, 'dd MMM, HH:mm')}"></div>
+                </div>
+            </div>
+
+            <div class="empty-state" th:if="${#lists.isEmpty(notifications)}">
+                <div class="icon">🔔</div>
+                <h3>All caught up!</h3>
+                <p>You have no notifications right now.</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

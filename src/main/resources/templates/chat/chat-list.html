@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chats – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/dashboard}">Dashboard</a>
+            <a th:href="@{/chat}" class="active">Chats</a>
+            <a th:href="@{/contacts}">Contacts</a>
+            <a th:href="@{/profile}">Profile</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <span class="sidebar-title">Menu</span>
+            <a th:href="@{/dashboard}"><span class="icon">🏠</span> Dashboard</a>
+            <a th:href="@{/chat}" class="active"><span class="icon">💬</span> Chats</a>
+            <a th:href="@{/contacts}"><span class="icon">👥</span> Contacts</a>
+            <a th:href="@{/notifications}"><span class="icon">🔔</span> Notifications</a>
+            <span class="sidebar-title">Account</span>
+            <a th:href="@{/profile}"><span class="icon">👤</span> Profile</a>
+            <a th:href="@{/logout}"><span class="icon">🚪</span> Logout</a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <div>
+                    <h1>Chats</h1>
+                    <p>Your conversations</p>
+                </div>
+                <a class="btn primary" th:href="@{/chat/new}">+ New Chat</a>
+            </div>
+
+            <ul class="chat-list" th:if="${not #lists.isEmpty(chats)}">
+                <li th:each="chat : ${chats}">
+                    <a class="chat-item" th:href="@{/chat/{id}(id=${chat.id})}">
+                        <div class="avatar" th:text="${#strings.substring(chat.otherUser.fullName, 0, 1)}">U</div>
+                        <div class="chat-meta">
+                            <div class="chat-name" th:text="${chat.otherUser.fullName}">Name</div>
+                            <div class="chat-preview" th:text="${chat.lastMessage} ?: 'No messages yet'"></div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                            <span th:if="${chat.lastMessageAt}" class="chat-time"
+                                  th:text="${#temporals.format(chat.lastMessageAt, 'HH:mm')}"></span>
+                            <span th:if="${chat.unreadCount > 0}" class="badge" th:text="${chat.unreadCount}"></span>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="empty-state" th:if="${#lists.isEmpty(chats)}">
+                <div class="icon">💬</div>
+                <h3>No conversations yet</h3>
+                <p>Go to contacts to start a new chat.</p>
+                <a class="btn primary mt-4" th:href="@{/contacts}">Go to Contacts</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

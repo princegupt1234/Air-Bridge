@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BT Chat – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+</head>
+<body style="overflow:hidden;">
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/bluetooth}">← Bluetooth</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="chat-shell">
+        <div class="chat-topbar">
+            <div class="avatar">📱</div>
+            <div class="chat-info">
+                <h3>Bluetooth Chat</h3>
+                <p style="color:var(--success);" id="btStatus">Connecting via RFCOMM…</p>
+            </div>
+            <span style="font-size:.75rem;color:var(--muted);" th:text="${mac}">MAC</span>
+        </div>
+
+        <div class="messages-area" id="messagesArea">
+            <div class="empty-state" style="margin:auto;">
+                <div class="icon">📡</div>
+                <h3>Bluetooth Direct Chat</h3>
+                <p>Messages are sent directly over RFCOMM — no internet required.</p>
+            </div>
+        </div>
+
+        <form class="message-input-bar" th:action="@{/bluetooth/send}" method="post" id="btForm">
+            <input type="hidden" name="macAddress" th:value="${mac}">
+            <input type="text" name="content" id="btInput" placeholder="Type a message…" required autocomplete="off">
+            <button type="submit">Send ➤</button>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+        const mac = [[${mac}]];
+        const area = document.getElementById('messagesArea');
+
+        function appendMessage(sender, text, outgoing) {
+            const empty = area.querySelector('.empty-state');
+            if (empty) empty.remove();
+
+            const wrap = document.createElement('div');
+            wrap.className = 'message-bubble ' + (outgoing ? 'outgoing' : 'incoming');
+            wrap.innerHTML = `
+                <div class="bubble-body">${text}</div>
+                <div class="bubble-meta">${sender} · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div>
+            `;
+            area.appendChild(wrap);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        // WebSocket subscription for incoming BT messages
+        const socket = new SockJS('/ws');
+        const stomp  = Stomp.over(socket);
+        stomp.debug  = null;
+        stomp.connect({}, function() {
+            document.getElementById('btStatus').textContent = 'Connected via Bluetooth';
+            stomp.subscribe('/topic/bluetooth/' + mac, function(frame) {
+                const payload = JSON.parse(frame.body);
+                appendMessage(payload.senderName, payload.content, false);
+            });
+        }, function() {
+            document.getElementById('btStatus').textContent = 'WebSocket disconnected';
+        });
+
+        // Show sent message immediately in UI
+        document.getElementById('btForm').addEventListener('submit', function() {
+            const input = document.getElementById('btInput');
+            if (input.value.trim()) {
+                appendMessage('You', input.value.trim(), true);
+            }
+        });
+    </script>
+</body>
+</html>

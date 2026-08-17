@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="auth-bg">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <div class="brand">✈ Air-Bridge</div>
+                <p>Sign in to your account</p>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert error" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="alert success" th:text="${successMessage}"></div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label>Email address</label>
+                    <input type="email" name="email" placeholder="you@example.com" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <div class="auth-row">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" name="remember-me" style="width:auto;margin:0;"> Remember me
+                    </label>
+                    <a th:href="@{/forgot-password}">Forgot password?</a>
+                </div>
+
+                <button type="submit">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account? <a th:href="@{/register}">Create one</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

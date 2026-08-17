@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Chat – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">Air-Bridge</div>
+        <nav>
+            <a th:href="@{/chat}">← Back</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <main class="auth-container">
+        <form class="auth-form" th:action="@{/chat/start}" method="post">
+            <h2>New Chat</h2>
+            <label>User ID</label>
+            <input type="number" name="userId" placeholder="Enter user ID" required>
+            <button type="submit">Start Chat</button>
+            <p><a th:href="@{/contacts}">Pick from contacts instead</a></p>
+        </form>
+    </main>
+</body>
+</html>

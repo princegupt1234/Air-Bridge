@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bluetooth Scan – Air-Bridge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="logo">✈ Air-Bridge</div>
+        <nav>
+            <a th:href="@{/dashboard}">Dashboard</a>
+            <a th:href="@{/bluetooth}" class="active">Bluetooth</a>
+            <a th:href="@{/logout}">Logout</a>
+        </nav>
+    </header>
+
+    <div class="app-shell">
+        <aside class="sidebar">
+            <span class="sidebar-title">Bluetooth</span>
+            <a th:href="@{/bluetooth}"><span class="icon">📡</span> Devices</a>
+            <a th:href="@{/bluetooth/scan}" class="active"><span class="icon">🔍</span> Scan</a>
+            <span class="sidebar-title">Menu</span>
+            <a th:href="@{/dashboard}"><span class="icon">🏠</span> Dashboard</a>
+            <a th:href="@{/chat}"><span class="icon">💬</span> Chats</a>
+            <a th:href="@{/logout}"><span class="icon">🚪</span> Logout</a>
+        </aside>
+
+        <main class="content-area">
+            <div class="page-header">
+                <div>
+                    <h1>Scan for Devices</h1>
+                    <p>Discover nearby Bluetooth devices</p>
+                </div>
+            </div>
+
+            <div th:if="${!available}" class="alert error">
+                ⚠ Bluetooth is not available on this machine. Make sure your Bluetooth adapter is enabled.
+            </div>
+
+            <div th:if="${available}" class="card mb-4" style="margin-bottom:24px;">
+                <p style="color:var(--muted);font-size:.875rem;margin-bottom:16px;">
+                    Scanning takes ~15 seconds. Make sure the remote device has Bluetooth enabled and is discoverable.
+                </p>
+                <form th:action="@{/bluetooth/scan}" method="post">
+                    <button type="submit" class="btn primary">🔍 Start Scan</button>
+                </form>
+            </div>
+
+            <div th:if="${scanDone}">
+                <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:16px;">
+                    Found <span th:text="${#lists.size(devices)}">0</span> device(s)
+                </h2>
+
+                <div class="contact-list" th:if="${not #lists.isEmpty(devices)}">
+                    <div class="contact-card" th:each="device : ${devices}">
+                        <div class="avatar">📶</div>
+                        <div class="contact-info">
+                            <div class="contact-name" th:text="${device.deviceName}">Device</div>
+                            <div class="contact-email" th:text="${device.macAddress}">MAC</div>
+                        </div>
+                        <div class="contact-actions">
+                            <form th:action="@{/bluetooth/connect}" method="post">
+                                <input type="hidden" name="macAddress" th:value="${device.macAddress}">
+                                <button type="submit" class="btn primary sm">Connect</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empty-state" th:if="${#lists.isEmpty(devices)}">
+                    <div class="icon">📡</div>
+                    <h3>No devices found</h3>
+                    <p>Make sure the other device has Bluetooth on and is set to discoverable.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
