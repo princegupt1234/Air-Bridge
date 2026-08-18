@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -136,7 +137,7 @@ public class BluetoothServiceImpl implements BluetoothService {
                     .start();
             bridgeProcesses.put(macAddress, proc);
             PrintWriter writer = new PrintWriter(
-                    new OutputStreamWriter(proc.getOutputStream(), "UTF-8"), true);
+                    new OutputStreamWriter(proc.getOutputStream(), StandardCharsets.UTF_8), true);
             bridgeWriters.put(macAddress, writer);
             startBridgeReader(macAddress, proc);
             log.info("BT client bridge started for {}", macAddress);
@@ -182,7 +183,7 @@ public class BluetoothServiceImpl implements BluetoothService {
     private void startBridgeReader(String mac, Process proc) {
         Thread t = new Thread(() -> {
             try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(proc.getInputStream(), "UTF-8"))) {
+                    new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     handleBridgeEvent(mac, line.trim());
@@ -213,7 +214,7 @@ public class BluetoothServiceImpl implements BluetoothService {
                     // Register writer for server-accepted connections
                     if ("__server__".equals(contextMac) && serverProcess != null) {
                         PrintWriter w = new PrintWriter(
-                                new OutputStreamWriter(serverProcess.getOutputStream(), "UTF-8"), true);
+                                new OutputStreamWriter(serverProcess.getOutputStream(), StandardCharsets.UTF_8), true);
                         bridgeWriters.put(mac, w);
                         bridgeProcesses.put(mac, serverProcess);
                     }
@@ -271,7 +272,7 @@ public class BluetoothServiceImpl implements BluetoothService {
         Process p = pb.start();
         String output;
         try (BufferedReader r = new BufferedReader(
-                new InputStreamReader(p.getInputStream(), "UTF-8"))) {
+                new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
             output = r.lines().collect(Collectors.joining("\n")).trim();
         }
         p.waitFor(10, TimeUnit.SECONDS);

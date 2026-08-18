@@ -93,7 +93,9 @@ public class ChatServiceImpl implements ChatService {
                 ? chat.getUserTwo() : chat.getUserOne();
         List<Message> messages = messageRepository.findByChatOrderBySentAtAsc(chat);
         String lastMsg = messages.isEmpty() ? null : messages.get(messages.size() - 1).getContent();
-        long unread = messageRepository.countByChatAndReadFalse(chat);
+        long unread = messages.stream()
+                .filter(m -> !m.getSender().getId().equals(currentUser.getId()) && !m.isRead())
+                .count();
         return ChatDTO.builder()
                 .id(chat.getId())
                 .otherUser(userService.toDTO(other))

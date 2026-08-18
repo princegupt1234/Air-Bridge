@@ -48,11 +48,6 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void markAllRead(User user) {
-        notificationRepository.findByUserOrderByCreatedAtDesc(user).forEach(n -> {
-            if (!n.isRead()) {
-                n.setRead(true);
-                notificationRepository.save(n);
-            }
-        });
+        notificationRepository.markAllReadByUser(user);
     }
 }
